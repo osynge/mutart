@@ -247,7 +247,7 @@ class DirAddCoverArtLastFm:
             # We know this is not one Album
             print "We know this is not one Album so ignoring"
             return
-        print ArtistList
+        #print ArtistList
         #print self.AritistsUnion,self.AritistsIntersection
         #print self.AlbumUnion,self.AlbumIntersection
         #print self.AritistsList
@@ -255,36 +255,44 @@ class DirAddCoverArtLastFm:
         #print plannedQueries
         MadeQueries = []
         MadeQueriesResults = []
+        MadeUrl = []
         last_request = LastFM()
         for filePath in plannedQueries.keys():
             QueriesforFile = plannedQueries[filePath]
             index = -1
+            #print QueriesforFile
             for Querie in QueriesforFile:
                 try:
                     index = MadeQueries.index(Querie)
                 except ValueError:
                     print ' filling cache %s - %s' % (Querie,filePath)
                     lastmetadata = last_request.album_getInfo(Querie)
+                    print "lastmetadata=%s" % lastmetadata
+                    if lastmetadata == None:
+                        print "No url found for: %s" % (filePath)
+                        imageUrl =None
+                    else:
+                        imageUrl = findRightImageFromLastFm(lastmetadata['album']["image"])
+                        if len(imageUrl) == 0:
+                            print "No cover art Url found for: %s" % (filePath)
+                            imageUrl =None
+                    
+                    
+                    print imageUrl
                     MadeQueries.append(Querie)
-                    MadeQueriesResults.append(lastmetadata)
+                    MadeUrl.append(imageUrl)
                     index = MadeQueries.index(Querie)
-                if MadeQueriesResults[index] != None:
-                    print "ford=%s" % MadeQueriesResults[index]
+                if MadeUrl[index] != None:
+                    self.QueriedImages[filePath] = MadeUrl[index]
                     break
             if index == -1:
                 # we had no queires for this file.
                 print "we had no queires for this file."
                 continue
-            if MadeQueriesResults[index] == None:
+            if MadeUrl[index] == None:
                 # Our last Query Was unsuccessfull
-                print "Our last Query Was unsuccessfull"
                 continue
-            lastmetadata = MadeQueriesResults[index]
-            imageUrl = findRightImageFromLastFm(lastmetadata['album']["image"])
-            if len(imageUrl) == 0:
-                print "No cover art Url found for: %s" % (filePath)
-                continue
-            self.QueriedImages[filePath] = [imageUrl]
+            self.QueriedImages[filePath] = MadeUrl[index]
         
             
     def AddImages(self):
@@ -296,8 +304,8 @@ class DirAddCoverArtLastFm:
                 try:
                     index = MadeUrls.index(Query)
                 except ValueError:
-                    print ' filling cache %s:%s' % (Query,flacPath)
-                    print MadeUrls
+                    #print ' filling cache %s:%s' % (Query,flacPath)
+                    #print MadeUrls
                     try:
                         data = urllib2.urlopen(Query  )
                     except urllib2.URLError:
