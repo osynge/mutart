@@ -269,7 +269,7 @@ class DirAddCoverArtLastFm:
                     MadeQueriesResults.append(lastmetadata)
                     index = MadeQueries.index(Querie)
                 if MadeQueriesResults[index] != None:
-                    print MadeQueriesResults[index]
+                    print "ford=%s" % MadeQueriesResults[index]
                     break
             if index == -1:
                 # we had no queires for this file.
