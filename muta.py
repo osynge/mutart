@@ -232,7 +232,7 @@ class DirAddCoverArtLastFm:
                     try:
                         for album in self.MutagenStructs[filePath]["album"]:
                             if not album in AlbumList:
-                                AlbumList.append(artist)
+                                AlbumList.append(album)
                     except KeyError:
                         pass
                     
@@ -242,9 +242,10 @@ class DirAddCoverArtLastFm:
                     for b in AlbumList:
                         for a in ArtistList:
                             plannedQueries[filePath].append({'album': b,'artist' : a})
-
+                    
             else:
                 # We know we have one Album but dirfferent tracks:
+                #print 'dddddddddd'
                 for filePath in self.filepaths:
                     ArtistList = list(self.DefaultArtistList)
                     AlbumList = list(self.DefaultAlbumList)
@@ -269,14 +270,14 @@ class DirAddCoverArtLastFm:
                     try:
                         for album in self.MutagenStructs[filePath]["album"]:
                             if not album in AlbumList:
-                                AlbumList.append(artist)
+                                AlbumList.append(album)
                     except KeyError:
                         pass
-                   
+                    print "ArtistList=%s" % ArtistList
                     for a in ArtistList:
                         for b in AlbumList:
                             plannedQueries[filePath].append({'album': b,'artist' : a})
-                    #print "plannedQueries[filePath]=%s"  % plannedQueries[filePath]
+                    print "plannedQueries[filePath]=%s"  % plannedQueries[filePath]
                     
         else:
             # We know this is not one Album
@@ -285,7 +286,7 @@ class DirAddCoverArtLastFm:
         #print ArtistList
         #print self.AritistsUnion,self.AritistsIntersection
         #print self.AlbumUnion,self.AlbumIntersection
-        #print self.AritistsList
+        #print "self.AritistsList=%s" % self.AritistsList
         #print self.AlbumList
         #print "plannedQueries=%s" %plannedQueries
         MadeQueries = []
@@ -301,13 +302,13 @@ class DirAddCoverArtLastFm:
                 try:
                     index = MadeQueries.index(Querie)
                 except ValueError:
-                    print ' filling cache %s ----- %s' % (Querie,filePath)
+                    #print ' filling cache %s ----- %s' % (Querie,filePath)
                     #print type (Querie)
                     lastmetadata = last_request.album_getInfo(Querie)
                     #print "lastmetadata=%s" % lastmetadata
                     imageUrl =None
                     if lastmetadata == None:
-                        print "No url found for: %s" % (filePath)
+                        print "No url found for: %s" % (Querie)
                         imageUrl =None
                     else:
                         listOfLastFmImageUrls = findRightImageFromLastFm(lastmetadata['album']["image"])
@@ -368,7 +369,7 @@ class DirAddCoverArtLastFm:
                     #print ' filling --- cache %s:%s' % (Query,flacPath)
                     #print MadeUrls
                     try:
-                        print "Query=%s,%s" % (Query,type(Query))
+                        #print "Query=%s,%s" % (Query,type(Query))
                         
                         data = urllib2.urlopen(Query  )
                     except urllib2.URLError:
@@ -424,7 +425,8 @@ def AddCoverArt2(path,AddCoverArtMetadata):
         #print obj.QueriedImages
         #obj.AddImages()
         obj.DisplayUrls()
-        obj.AddImages()
+        if "apply" in AddCoverArtMetadata:
+            obj.AddImages()
         
         
         
@@ -443,7 +445,25 @@ def main():
     parser.add_option('--artist',action='append',help='Artist Name')
     parser.add_option('--album',action='append',help='Artist Name')
     parser.add_option('--url',action='store',help='Artist Name')
+    parser.add_option('--apply',action='store_true',help='Artist Name')
+    parser.add_option('--logfile', action ='store',help='Logfile configuration file.', metavar='LOGFILE')
     options, arguments = parser.parse_args() 
+    # Set up log file
+    logFile = None
+    if options.logfile:
+        logFile = options.logfile
+    if logFile != None:
+        if os.path.isfile(str(options.logfile)):
+            logging.config.fileConfig(options.logfile)
+        else:
+            logging.basicConfig(level=logging.INFO)
+            log = logging.getLogger("main")
+            log.error("Logfile configuration file '%s' was not found." % (options.logfile))
+            sys.exit(1)
+    else:
+        logging.basicConfig(level=logging.INFO)
+    log = logging.getLogger("main")
+    
     metadata = {}
     if options.artist:
         if len(options.artist) > 0:
@@ -452,6 +472,9 @@ def main():
         if len(options.album) > 0:
             metadata['album'] = options.album
             #print type(metadata['album']), metadata['album'] 
+    if options.apply:
+        
+        metadata['apply'] = True
     if options.url:
         if len(options.url) > 0:
             metadata['url'] = options.url
