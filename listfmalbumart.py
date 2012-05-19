@@ -41,6 +41,7 @@ class LastFM:
             "format":	"json",
             "autocorrect" : 1
         })
+        #print "sssssssssssssssssssssffffffffffffffff=%s"  % info
         try:
             #Create an API Request
             try:
@@ -52,6 +53,7 @@ class LastFM:
             response_data = json.load( data )
             #Close connection
             data.close()
+            
             if 'album' in response_data:
                 return response_data
             return None

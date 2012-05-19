@@ -57,12 +57,14 @@ def findRightImageFromLastFm(images):
         if bestPreferanceIndex < thisPreferanceIndex:
             bestPreferanceIndex = thisPreferanceIndex
             bestUrl = image["#text"]
-    return bestUrl
+    return [bestUrl]
     
 class DirAddCoverArtLastFm:
     def __init__(self, path):
         self.path = path
         self.filepaths = []
+        self.DefaultArtistList = []
+        self.DefaultAlbumList = []
         
     def readfiles(self):
         self.MutagenStructs = {}
@@ -83,7 +85,7 @@ class DirAddCoverArtLastFm:
             try:
                 metadata = FLAC(fileName)
             except FLACNoHeaderError as (strerror):
-                print strerror
+                print "strerror=%s" % ( strerror)
                 continue
             if pict_test(metadata):
                 print "Already has cover are:%s" % (fileName)
@@ -210,17 +212,44 @@ class DirAddCoverArtLastFm:
                 
                 # We know ArtistList and Album is conistent across Album
                 for filePath in self.filepaths:
+                    ArtistList = list(self.DefaultArtistList)
+                    AlbumList = list(self.DefaultAlbumList)
+                    try:
+                        for artist in self.MutagenStructs[filePath]["artist"]:
+                            if not artist in ArtistList:
+                                ArtistList.append(artist)
+                    except KeyError:
+                        pass
+                    try:
+                        for artist in self.MutagenStructs[filePath]["performer"]:
+                            if not artist in ArtistList:
+                                ArtistList.append(artist)
+                    except KeyError:
+                        pass
+                    for artist in ['Various Artists','Various']:
+                        if not artist in ArtistList:
+                                ArtistList.append(artist)
+                    try:
+                        for album in self.MutagenStructs[filePath]["album"]:
+                            if not album in AlbumList:
+                                AlbumList.append(artist)
+                    except KeyError:
+                        pass
+                    
+                        
                     plannedQueries[filePath] = []
                     
-                    for b in self.AlbumList:
-                        for a in self.AritistsList + self.PerformerList:
+                    for b in AlbumList:
+                        for a in ArtistList:
                             plannedQueries[filePath].append({'album': b,'artist' : a})
 
             else:
                 # We know we have one Album but dirfferent tracks:
-                #print self.AritistsList  
-                ArtistList = []
                 for filePath in self.filepaths:
+                    ArtistList = list(self.DefaultArtistList)
+                    AlbumList = list(self.DefaultAlbumList)
+                    #print AlbumList
+                    #print ArtistList
                     plannedQueries[filePath] = []
                     try:
                         for artist in self.MutagenStructs[filePath]["artist"]:
@@ -237,11 +266,17 @@ class DirAddCoverArtLastFm:
                     for artist in ['Various Artists','Various']:
                         if not artist in ArtistList:
                                 ArtistList.append(artist)
+                    try:
+                        for album in self.MutagenStructs[filePath]["album"]:
+                            if not album in AlbumList:
+                                AlbumList.append(artist)
+                    except KeyError:
+                        pass
                    
                     for a in ArtistList:
-                        for b in self.AlbumList:
+                        for b in AlbumList:
                             plannedQueries[filePath].append({'album': b,'artist' : a})
-                    #print plannedQueries[filePath]
+                    #print "plannedQueries[filePath]=%s"  % plannedQueries[filePath]
                     
         else:
             # We know this is not one Album
@@ -252,11 +287,12 @@ class DirAddCoverArtLastFm:
         #print self.AlbumUnion,self.AlbumIntersection
         #print self.AritistsList
         #print self.AlbumList
-        #print plannedQueries
+        #print "plannedQueries=%s" %plannedQueries
         MadeQueries = []
         MadeQueriesResults = []
         MadeUrl = []
         last_request = LastFM()
+        LocalQueriedImages = {}
         for filePath in plannedQueries.keys():
             QueriesforFile = plannedQueries[filePath]
             index = -1
@@ -265,24 +301,35 @@ class DirAddCoverArtLastFm:
                 try:
                     index = MadeQueries.index(Querie)
                 except ValueError:
-                    print ' filling cache %s - %s' % (Querie,filePath)
+                    print ' filling cache %s ----- %s' % (Querie,filePath)
+                    #print type (Querie)
                     lastmetadata = last_request.album_getInfo(Querie)
-                    print "lastmetadata=%s" % lastmetadata
+                    #print "lastmetadata=%s" % lastmetadata
+                    imageUrl =None
                     if lastmetadata == None:
                         print "No url found for: %s" % (filePath)
                         imageUrl =None
                     else:
-                        imageUrl = findRightImageFromLastFm(lastmetadata['album']["image"])
+                        listOfLastFmImageUrls = findRightImageFromLastFm(lastmetadata['album']["image"])
+                        #print "listOfLastFmImageUrls=%s" % (listOfLastFmImageUrls)
+                        imageUrl = []
+                        for Aurl in listOfLastFmImageUrls:
+                            if len(Aurl) != 0:
+                                if Aurl not in imageUrl:
+                                    imageUrl.append(Aurl)
                         if len(imageUrl) == 0:
-                            print "No cover art Url found for: %s" % (filePath)
                             imageUrl =None
+                        
+                   
                     
                     
-                    print imageUrl
+                    #print "imageUrl=%s" % imageUrl
                     MadeQueries.append(Querie)
                     MadeUrl.append(imageUrl)
                     index = MadeQueries.index(Querie)
                 if MadeUrl[index] != None:
+                    #print "ddddddddddddddddddddddddddddddddddddddddddd"
+                    #print "MadeUrl[index]=%s" % MadeUrl[index]
                     self.QueriedImages[filePath] = MadeUrl[index]
                     break
             if index == -1:
@@ -292,9 +339,23 @@ class DirAddCoverArtLastFm:
             if MadeUrl[index] == None:
                 # Our last Query Was unsuccessfull
                 continue
-            self.QueriedImages[filePath] = MadeUrl[index]
-        
+            #print "MadeUrl[index]=%s" % (MadeUrl[index])
+            LocalQueriedImages[filePath] = MadeUrl[index]
+        #print "self.QueriedImages=%s" % (self.QueriedImages)
+        for key in LocalQueriedImages.keys():
+            if LocalQueriedImages[key] != None:
+                self.QueriedImages[key] = LocalQueriedImages[key]
+        print self.QueriedImages
+    def  SetUrl(self,url):
+        #print "called SetUrl"
+        self.QueriedImages = {}
+        for filePath in self.filepaths:
+            self.QueriedImages[filePath] = [url]
             
+    def DisplayUrls(self):
+        for flacPath in self.QueriedImages.keys():
+            shortname = os.path.basename(flacPath)
+            print "%s - %s" % (shortname , self.QueriedImages[flacPath])
     def AddImages(self):
         MadeUrls = []
         MadeUrlsResults = []
@@ -304,9 +365,11 @@ class DirAddCoverArtLastFm:
                 try:
                     index = MadeUrls.index(Query)
                 except ValueError:
-                    #print ' filling cache %s:%s' % (Query,flacPath)
+                    #print ' filling --- cache %s:%s' % (Query,flacPath)
                     #print MadeUrls
                     try:
+                        print "Query=%s,%s" % (Query,type(Query))
+                        
                         data = urllib2.urlopen(Query  )
                     except urllib2.URLError:
                         print "Could not open URL: %s for file : %s" % (imageUrl,filePath)
@@ -320,7 +383,7 @@ class DirAddCoverArtLastFm:
             if len(MadeUrlsResults[index]) == 0:
                 # we had no data
                 continue
-            print ' have %s for %s' % (Query,flacPath)
+            #print ' have %s for %s' % (Query,flacPath)
             try:
                 metadata = FLAC(flacPath)
             except FLACNoHeaderError as (strerror):
@@ -336,7 +399,6 @@ class DirAddCoverArtLastFm:
                 mime = 'image/png'
             if Query.endswith('jpg'):
                 mime = 'image/jpeg'
-            
             image.data = MadeUrlsResults[index]
             metadata.add_picture(image)
             metadata.save()
@@ -346,9 +408,24 @@ def AddCoverArt2(path,AddCoverArtMetadata):
     for (path, dirs, files) in os.walk(path):
         obj = DirAddCoverArtLastFm(path)
         obj.readfiles()
-        obj.QueryLastFm()
+        if "artist" in AddCoverArtMetadata:
+            obj.DefaultArtistList = AddCoverArtMetadata["artist"]
+        if "album" in AddCoverArtMetadata:
+            obj.DefaultAlbumList = AddCoverArtMetadata["album"]
+            
+        
+            #print obj.DefaultArtistList 
+        if "url" in AddCoverArtMetadata:
+            
+            obj.SetUrl(AddCoverArtMetadata["url"])
+        else:
+            obj.QueryLastFm()
+        
         #print obj.QueriedImages
+        #obj.AddImages()
+        obj.DisplayUrls()
         obj.AddImages()
+        
         
         
 
@@ -365,15 +442,20 @@ def main():
     parser.add_option('--path', action ='append',help='list subscriptions')
     parser.add_option('--artist',action='append',help='Artist Name')
     parser.add_option('--album',action='append',help='Artist Name')
+    parser.add_option('--url',action='store',help='Artist Name')
     options, arguments = parser.parse_args() 
     metadata = {}
     if options.artist:
         if len(options.artist) > 0:
             metadata['artist'] = options.artist
-    if options.artist:
-        if len(options.artist) > 0:
-            metadata['album'] = options.artist
-    
+    if options.album:
+        if len(options.album) > 0:
+            metadata['album'] = options.album
+            #print type(metadata['album']), metadata['album'] 
+    if options.url:
+        if len(options.url) > 0:
+            metadata['url'] = options.url
+            
     if options.path:
         AddCoverArt(options.path,metadata)
 
