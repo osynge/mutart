@@ -34,19 +34,19 @@ class LastFM:
     def album_getInfo(self, info, **kwargs):
         kwargs.update({
             "method":	"album.getInfo",
-            "artist":		info['artist'],
-            "album": info['album'],
+            "artist": info['artist'].encode('utf-8'),
+            "album": info['album'].encode('utf-8'),
             "api_key":	self.API_KEY,
             "limit":	3,
             "format":	"json",
             "autocorrect" : 1
         })
-        #print "sssssssssssssssssssssffffffffffffffff=%s"  % info
         try:
             #Create an API Request
             try:
                 url = self.API_URL + "?" + urllib.urlencode(kwargs)
             except UnicodeEncodeError as (one):
+                #print "encoding error"
                 return None
             #Send Request and Collect it
             data = urllib2.urlopen( url )

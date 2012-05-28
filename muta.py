@@ -317,7 +317,9 @@ class DirAddCoverArtLastFm:
         MadeUrl = []
         last_request = LastFM()
         LocalQueriedImages = {}
-        for filePath in plannedQueries.keys():
+        plannedQueriesKeys = plannedQueries.keys()
+        plannedQueriesKeys.sort()
+        for filePath in plannedQueriesKeys:
             QueriesforFile = plannedQueries[filePath]
             index = -1
             #print QueriesforFile
@@ -386,7 +388,9 @@ class DirAddCoverArtLastFm:
     def AddImages(self):
         MadeUrls = []
         MadeUrlsResults = []
-        for flacPath in self.QueriedImages.keys():
+        QueriedImagesKeys = self.QueriedImages.keys()
+        QueriedImagesKeys.sort()
+        for flacPath in QueriedImagesKeys:
             index = -1
             for Query in self.QueriedImages[flacPath]:
                 try:
@@ -466,7 +470,6 @@ def AddCoverArt2(path,AddCoverArtMetadata):
 
 def AddCoverArt(pathList,AddCoverArtMetadata):
     for path in pathList:
-        #print path
         AddCoverArt2(path,AddCoverArtMetadata)
         
 
