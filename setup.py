@@ -14,7 +14,7 @@ except:
 version="0.0.1"
 setup(name='mutart',
     version=version,
-    description="VM Image list creation and signing tool",
+    description="Adds Album art to FLAC music files",
     long_description="""Adds album art to flac files (and maybe other formats later) using meta data retrieved from LastFM (and maybe other metadata servers later)""",
     author="O M Synge",
     author_email="owen.synge@desy.de",
