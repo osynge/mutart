@@ -17,8 +17,7 @@ version = "0.0.1"
 class LastFM:
     def __init__(self ):
         self.API_URL = "http://ws.audioscrobbler.com/2.0/"
-        self.API_KEY = "b25b959554ed76058ac220b7b2e0a026"
- 
+        self.API_KEY = "c6e9c72bbec0497a87391feda206de05"
     def get_genre(self, genre, **kwargs):
         kwargs.update({
             "method":	"tag.gettopartists",
