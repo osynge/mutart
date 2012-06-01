@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from mutagen.flac import FLAC, Picture, FLACNoHeaderError
+from mutagen.flac import FLAC, Picture, FLACNoHeaderError, error
 
 import os
 import urllib, urllib2
@@ -10,7 +10,8 @@ try:
     import json
 except ImportError:
     import simplejson as json
- 
+import httplib
+
 version = "0.0.1"
 
 
@@ -58,7 +59,10 @@ class LastFM:
                 #print "encoding error"
                 return None
             #Send Request and Collect it
-            data = urllib2.urlopen( url )
+            try:
+                data = urllib2.urlopen( url )
+            except httplib.BadStatusLine:
+                return None
             response_data = json.load( data )
             #Close connection
             data.close()
@@ -162,6 +166,9 @@ class DirAddCoverArtLastFm:
                 metadata = FLAC(fileName)
             except FLACNoHeaderError as (strerror):
                 print "strerror=%s" % ( strerror)
+                continue
+            except error  as (flacErorr):
+                print "flacErorr=%s" % ( flacErorr)
                 continue
             if pict_test(metadata):
                 print "Already has cover for:%s" % (fileName)
