@@ -541,7 +541,7 @@ def main():
     log = logging.getLogger("main")
     """Runs program and handles command line options"""
     parser = optparse.OptionParser(version = "%prog " + version)
-    parser.add_option('--path', action ='append',help='list subscriptions')
+    parser.add_option('--path', action ='append',help='Music file path')
     parser.add_option('--artist',action='append',help='Artist Name')
     parser.add_option('--album',action='append',help='Artist Name')
     parser.add_option('--url',action='store',help='Artist Name')
