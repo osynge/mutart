@@ -17,6 +17,7 @@ version = "0.0.1"
 
 class LastFM:
     def __init__(self ):
+        self.log = logging.getLogger("LastFM")
         self.API_URL = "http://ws.audioscrobbler.com/2.0/"
         self.API_KEY = "c6e9c72bbec0497a87391feda206de05"
     def get_genre(self, genre, **kwargs):
@@ -71,9 +72,9 @@ class LastFM:
                 return response_data
             return None
         except urllib2.HTTPError, e:
-            print "HTTP error: %d" % e.code
+            self.log.error("HTTP error code: %d" % e.code)
         except urllib2.URLError, e:
-            print "Network error: %s" % e.reason.args[1]
+            self.log.error("Network error: %s" % e.reason.args[1])
 def add_flac_cover(filename, albumart):
     audio = File(filename)
 
@@ -122,7 +123,7 @@ def findRightImageFromLastFm(images):
     
 class DirAddCoverArtLastFm:
     def __init__(self, path):
-
+        self.log = logging.getLogger("DirAddCoverArt")
         self.path = path
         self.filepaths = []
         self.DefaultArtistList = []
@@ -137,7 +138,7 @@ class DirAddCoverArtLastFm:
             try:
                 metadata = FLAC(fileName)
             except FLACNoHeaderError as (strerror):
-                print "strerror=%s" % ( strerror)
+                self.log.info("strerror=%s" % ( strerror))
                 continue
             
             metadata.clear_pictures()
@@ -165,13 +166,13 @@ class DirAddCoverArtLastFm:
             try:
                 metadata = FLAC(fileName)
             except FLACNoHeaderError as (strerror):
-                print "strerror=%s" % ( strerror)
+                self.log.info("strerror=%s" % ( strerror))
                 continue
             except error  as (flacErorr):
-                print "flacErorr=%s" % ( flacErorr)
+                self.log.error("flacErorr=%s" % ( flacErorr))
                 continue
             if pict_test(metadata):
-                print "Already has cover for:%s" % (fileName)
+                self.log.info("Already has cover for:%s" % (fileName))
                 continue
             #print metadata
             
@@ -397,7 +398,7 @@ class DirAddCoverArtLastFm:
                     #print "lastmetadata=%s" % lastmetadata
                     imageUrl =None
                     if lastmetadata == None:
-                        print "No url found for: %s" % (Querie)
+                        self.log.warning("No url found for: %s" % (Querie))
                         imageUrl =None
                     else:
                         listOfLastFmImageUrls = findRightImageFromLastFm(lastmetadata['album']["image"])
@@ -408,7 +409,7 @@ class DirAddCoverArtLastFm:
                                 if Aurl not in imageUrl:
                                     imageUrl.append(Aurl)
                         if len(imageUrl) == 0:
-                            print "No url found for: %s" % (Querie)
+                            self.log.warning("No valid url found for:%s:%s" % (filePath,Querie))
                             imageUrl =None
                         
                    
@@ -547,23 +548,53 @@ def main():
     parser.add_option('--url',action='store',help='Artist Name')
     parser.add_option('--apply',action='store_true',help='Artist Name')
     parser.add_option('--clear',action='store_true',help='Artist Name')
-    parser.add_option('--logfile', action ='store',help='Logfile configuration file.', metavar='LOGFILE')
+    parser.add_option('-L', '--logcfg', action ='store',help='Logfile configuration file.', metavar='CFG_LOGFILE')
+    parser.add_option('--verbose', action ='count',help='Change global log level, increasing log output.', metavar='LOGFILE')
+    parser.add_option('--quiet', action ='count',help='Change global log level, decreasing log output.', metavar='LOGFILE')
     options, arguments = parser.parse_args() 
-    # Set up log file
+    # Set up basic variables
     logFile = None
-    if options.logfile:
-        logFile = options.logfile
+    # Set up log file
+    
+    LoggingLevel = logging.WARNING
+    LoggingLevelCounter = 2
+    if options.verbose:
+        LoggingLevelCounter = LoggingLevelCounter - options.verbose
+        if options.verbose == 1:
+            LoggingLevel = logging.INFO
+        if options.verbose == 2:
+            LoggingLevel = logging.DEBUG
+    if options.quiet:
+        LoggingLevelCounter = LoggingLevelCounter + options.quiet
+    if LoggingLevelCounter <= 0:
+        LoggingLevel = logging.DEBUG
+    if LoggingLevelCounter == 1:
+        LoggingLevel = logging.INFO
+    if LoggingLevelCounter == 2:
+        LoggingLevel = logging.WARNING
+    if LoggingLevelCounter == 3:
+        LoggingLevel = logging.ERROR
+    if LoggingLevelCounter == 4:
+        LoggingLevel = logging.FATAL
+    if LoggingLevelCounter >= 5:
+        LoggingLevel = logging.CRITICAL
+    
+    if options.logcfg:
+        logFile = options.logcfg
     if logFile != None:
-        if os.path.isfile(str(options.logfile)):
-            logging.config.fileConfig(options.logfile)
+        if os.path.isfile(str(options.log_config)):
+            logging.config.fileConfig(options.log_config)
         else:
-            logging.basicConfig(level=logging.INFO)
+            logging.basicConfig(level=LoggingLevel)
             log = logging.getLogger("main")
-            log.error("Logfile configuration file '%s' was not found." % (options.logfile))
+            log.error("Logfile configuration file '%s' was not found." % (options.log_config))
             sys.exit(1)
     else:
-        logging.basicConfig(level=logging.INFO)
+        
+        logging.basicConfig(level=LoggingLevel)
     log = logging.getLogger("main")
+    
+    
     
     metadata = {}
     if options.artist:
