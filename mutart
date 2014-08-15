@@ -140,6 +140,9 @@ class DirAddCoverArtLastFm:
             except FLACNoHeaderError as (strerror):
                 self.log.info("strerror=%s" % ( strerror))
                 continue
+            except error as E:
+                self.log.info("strerror=%s" % ( E))
+                continue
             
             metadata.clear_pictures()
             metadata.save()
