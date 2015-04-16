@@ -38,7 +38,7 @@ setup(name='mutart',
         'Operating System :: POSIX',
         'Programming Language :: Python',
         ],
-
+    packages = ['pymutart'],
     scripts=['mutart'],
     data_files=[('/usr/share/doc/mutart-%s' % (version),['README.md'])],
     tests_require=[
