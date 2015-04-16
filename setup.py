@@ -2,14 +2,21 @@ from sys import version_info
 
 
 try:
-	from distutils.core import setup
-except:
+    from setuptools import setup, find_packages
+except ImportError:
 	try:
-        	from setuptools import setup, find_packages
+            from distutils.core import setup
 	except ImportError:
-        	from ez_setup import use_setuptools
-        	use_setuptools()
-        	from setuptools import setup, find_packages
+            from ez_setup import use_setuptools
+            use_setuptools()
+            from setuptools import setup, find_packages
+# we want this module for nosetests
+try:
+    import multiprocessing
+except ImportError:
+    # its not critical if this fails though.
+    pass
+
 
 version="0.0.1"
 setup(name='mutart',
@@ -33,5 +40,15 @@ setup(name='mutart',
         ],
 
     scripts=['mutart'],
-    data_files=[('/usr/share/doc/mutart-%s' % (version),['README.md'])]
+    data_files=[('/usr/share/doc/mutart-%s' % (version),['README.md'])],
+    tests_require=[
+        'coverage >= 3.0',
+        'nose >= 1.1.0',
+        'mock',
+    ],
+    setup_requires=[
+        'nose',
+    ],
+    test_suite = 'nose.collector',
     )
+
