@@ -67,7 +67,7 @@ class LastFM:
             response_data = json.load( data )
             #Close connection
             data.close()
-            
+
             if 'album' in response_data:
                 return response_data
             return None
@@ -92,12 +92,12 @@ def add_flac_cover(filename, albumart):
     audio.save()
 
 def pict_test(audio):
-    try: 
+    try:
         x = audio.pictures
         if x:
             return True
     except Exception:
-        pass  
+        pass
     if 'covr' in audio or 'APIC:' in audio:
         return True
     return False
@@ -120,7 +120,7 @@ def findRightImageFromLastFm(images):
             bestPreferanceIndex = thisPreferanceIndex
             bestUrl = image["#text"]
     return [bestUrl]
-    
+
 class DirAddCoverArtLastFm:
     def __init__(self, path):
         self.log = logging.getLogger("DirAddCoverArt")
@@ -133,7 +133,7 @@ class DirAddCoverArtLastFm:
             fileName = os.path.join(self.path,fileShortName)
 
             if os.path.isdir(fileName):
-                
+
                 continue
             try:
                 metadata = FLAC(fileName)
@@ -143,7 +143,7 @@ class DirAddCoverArtLastFm:
             except error as E:
                 self.log.info("strerror=%s" % ( E))
                 continue
-            
+
             metadata.clear_pictures()
             metadata.save()
             del(metadata)
@@ -178,12 +178,12 @@ class DirAddCoverArtLastFm:
                 self.log.info("Already has cover for:%s" % (fileName))
                 continue
             #print metadata
-            
-            
-            
+
+
+
             self.filepaths.append(fileName)
             self.MutagenStructs[fileName] = metadata
-            
+
             if self.AritistsList == None:
                 try:
                     self.AritistsList = self.MutagenStructs[fileName]['artist']
@@ -326,11 +326,11 @@ class DirAddCoverArtLastFm:
                     except KeyError:
                         pass
                     plannedQueries[filePath] = []
-                    
+
                     for b in AlbumList:
                         for a in ArtistList:
                             plannedQueries[filePath].append({'album': b,'artist' : a})
-                    
+
             else:
                 # We know we have one Album but dirfferent tracks:
                 #print 'dddddddddd'
@@ -355,7 +355,7 @@ class DirAddCoverArtLastFm:
                                 ArtistList.append(artist)
                     except KeyError:
                         pass
-                    
+
                     try:
                         for album in self.MutagenStructs[filePath]["album"]:
                             if not album in AlbumList:
@@ -369,7 +369,7 @@ class DirAddCoverArtLastFm:
                     #print "plannedQueries[filePath]=%s"  % plannedQueries[filePath]
                     #print "ArtistList=%s"  % ArtistList
                     #print "AlbumList=%s"  % AlbumList
-                    
+
         else:
             # We know this is not one Album
             print "We know this is not one Album so ignoring"
@@ -414,10 +414,10 @@ class DirAddCoverArtLastFm:
                         if len(imageUrl) == 0:
                             self.log.warning("No valid url found for:%s:%s" % (filePath,Querie))
                             imageUrl =None
-                        
-                   
-                    
-                    
+
+
+
+
                     #print "imageUrl=%s" % imageUrl
                     MadeQueries.append(Querie)
                     MadeUrl.append(imageUrl)
@@ -433,11 +433,11 @@ class DirAddCoverArtLastFm:
                 continue
             if MadeUrl[index] == None:
                 # Our last Query Was unsuccessfull
-                
+
                 continue
             #print "MadeUrl[index]=%s" % (MadeUrl[index])
             LocalQueriedImages[filePath] = MadeUrl[index]
-            
+
         #print "self.QueriedImages=%s" % (self.QueriedImages)
         for key in LocalQueriedImages.keys():
             if LocalQueriedImages[key] != None:
@@ -448,7 +448,7 @@ class DirAddCoverArtLastFm:
         self.QueriedImages = {}
         for filePath in self.filepaths:
             self.QueriedImages[filePath] = [url]
-            
+
     def DisplayUrls(self):
         for flacPath in self.QueriedImages.keys():
             shortname = os.path.basename(flacPath)
@@ -468,7 +468,7 @@ class DirAddCoverArtLastFm:
                     #print MadeUrls
                     try:
                         #print "Query=%s,%s" % (Query,type(Query))
-                        
+
                         data = urllib2.urlopen(Query  )
                     except urllib2.URLError:
                         print "Could not open URL: %s for file : %s" % (Query,flacPath)
@@ -504,42 +504,42 @@ class DirAddCoverArtLastFm:
 
 def AddCoverArt2(path,AddCoverArtMetadata):
     last_request = LastFM()
-    
+
     for (path, dirs, files) in os.walk(path):
         #print path
-        
+
         obj = DirAddCoverArtLastFm(path)
         if "clear" in AddCoverArtMetadata:
             obj.clearCoverArt()
-        
+
         obj.readfiles()
         if "artist" in AddCoverArtMetadata:
             obj.DefaultArtistList = AddCoverArtMetadata["artist"]
         if "album" in AddCoverArtMetadata:
             obj.DefaultAlbumList = AddCoverArtMetadata["album"]
-        
-        
-            #print obj.DefaultArtistList 
+
+
+            #print obj.DefaultArtistList
         if "url" in AddCoverArtMetadata:
-            
+
             obj.SetUrl(AddCoverArtMetadata["url"])
         else:
             obj.QueryLastFm()
-        
+
         #print obj.QueriedImages
         #obj.AddImages()
         obj.DisplayUrls()
         if "apply" in AddCoverArtMetadata:
             obj.AddImages()
-        
-        
-        
+
+
+
 
 
 def AddCoverArt(pathList,AddCoverArtMetadata):
     for path in pathList:
         AddCoverArt2(path,AddCoverArtMetadata)
-        
+
 
 def main():
     log = logging.getLogger("main")
@@ -554,11 +554,11 @@ def main():
     parser.add_option('-L', '--logcfg', action ='store',help='Logfile configuration file.', metavar='CFG_LOGFILE')
     parser.add_option('--verbose', action ='count',help='Change global log level, increasing log output.', metavar='LOGFILE')
     parser.add_option('--quiet', action ='count',help='Change global log level, decreasing log output.', metavar='LOGFILE')
-    options, arguments = parser.parse_args() 
+    options, arguments = parser.parse_args()
     # Set up basic variables
     logFile = None
     # Set up log file
-    
+
     LoggingLevel = logging.WARNING
     LoggingLevelCounter = 2
     if options.verbose:
@@ -581,7 +581,7 @@ def main():
         LoggingLevel = logging.FATAL
     if LoggingLevelCounter >= 5:
         LoggingLevel = logging.CRITICAL
-    
+
     if options.logcfg:
         logFile = options.logcfg
     if logFile != None:
@@ -593,12 +593,12 @@ def main():
             log.error("Logfile configuration file '%s' was not found." % (options.log_config))
             sys.exit(1)
     else:
-        
+
         logging.basicConfig(level=LoggingLevel)
     log = logging.getLogger("main")
-    
-    
-    
+
+
+
     metadata = {}
     if options.artist:
         if len(options.artist) > 0:
@@ -606,7 +606,7 @@ def main():
     if options.album:
         if len(options.album) > 0:
             metadata['album'] = options.album
-            #print type(metadata['album']), metadata['album'] 
+            #print type(metadata['album']), metadata['album']
     if options.apply:
         metadata['apply'] = True
     if options.clear:
@@ -614,7 +614,7 @@ def main():
     if options.url:
         if len(options.url) > 0:
             metadata['url'] = options.url
-            
+
     if options.path:
         AddCoverArt(options.path,metadata)
 
