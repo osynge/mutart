@@ -12,7 +12,7 @@ except ImportError:
     import simplejson as json
 import httplib
 
-version = "0.0.1"
+from __version__ import version
 
 
 class LastFM:

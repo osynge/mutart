@@ -1,5 +1,5 @@
 from sys import version_info
-
+from pymutart.__version__ import version
 
 try:
     from setuptools import setup, find_packages
@@ -17,8 +17,6 @@ except ImportError:
     # its not critical if this fails though.
     pass
 
-
-version="0.0.1"
 setup(name='mutart',
     version=version,
     description="Adds Album art to FLAC music files",
@@ -40,7 +38,10 @@ setup(name='mutart',
         ],
     packages = ['pymutart'],
     scripts=['mutart'],
-    data_files=[('/usr/share/doc/mutart-%s' % (version),['README.md'])],
+    data_files=[('/usr/share/doc/mutart-%s' % (version),[
+        'README.md',
+        'ChangeLog'
+        ])],
     tests_require=[
         'coverage >= 3.0',
         'nose >= 1.1.0',
