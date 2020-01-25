@@ -1,8 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from mutagen.flac import FLAC, Picture, FLACNoHeaderError, error
 
 import os
-import urllib, urllib2
+from six.moves import urllib
+#import urllib, urllib2
 import logging
 import optparse
 import sys
@@ -10,9 +11,9 @@ try:
     import json
 except ImportError:
     import simplejson as json
-import httplib
+#import httplib
 
-from __version__ import version
+version = "0.0.1"
 
 
 class LastFM:
@@ -32,16 +33,17 @@ class LastFM:
             #Create an API Request
             url = self.API_URL + "?" + urllib.urlencode(kwargs)
             #Send Request and Collect it
-            data = urllib2.urlopen( url )
+            data = urllib.request.urlopen( url )
             #Print it
             response_data = json.load( data )
-            print response_data['topartists']['artist'][0]['name']
+            print(response_data['topartists']['artist'][0]['name'])
             #Close connection
             data.close()
-        except urllib2.HTTPError, e:
-            print "HTTP error: %d" % e.code
-        except urllib2.URLError, e:
-            print "Network error: %s" % e.reason.args[1]
+        except urllib2.HTTPError as e:
+            print("HTTP error: %d" % e.code)
+        except urllib2.URLError as e:
+            print("Network error: %s" % e.reason.args[1])
+
     def album_getInfo(self, info, **kwargs):
         kwargs.update({
             "method":	"album.getInfo",
@@ -55,15 +57,12 @@ class LastFM:
         try:
             #Create an API Request
             try:
-                url = self.API_URL + "?" + urllib.urlencode(kwargs)
-            except UnicodeEncodeError as (one):
+                url = self.API_URL + "?" + urllib.parse.urlencode(kwargs)
+            except UnicodeEncodeError as one:
                 #print "encoding error"
                 return None
             #Send Request and Collect it
-            try:
-                data = urllib2.urlopen( url )
-            except httplib.BadStatusLine:
-                return None
+            data = urllib.request.urlopen( url )
             response_data = json.load( data )
             #Close connection
             data.close()
@@ -71,10 +70,11 @@ class LastFM:
             if 'album' in response_data:
                 return response_data
             return None
-        except urllib2.HTTPError, e:
+        except urllib.error.HTTPError as e:
             self.log.error("HTTP error code: %d" % e.code)
-        except urllib2.URLError, e:
+        except urllib.error.URLError as e:
             self.log.error("Network error: %s" % e.reason.args[1])
+
 def add_flac_cover(filename, albumart):
     audio = File(filename)
 
@@ -133,17 +133,15 @@ class DirAddCoverArtLastFm:
             fileName = os.path.join(self.path,fileShortName)
 
             if os.path.isdir(fileName):
-
                 continue
             try:
                 metadata = FLAC(fileName)
-            except FLACNoHeaderError as (strerror):
+            except FLACNoHeaderError as strerror:
                 self.log.info("strerror=%s" % ( strerror))
                 continue
             except error as E:
                 self.log.info("strerror=%s" % ( E))
                 continue
-
             metadata.clear_pictures()
             metadata.save()
             del(metadata)
@@ -168,17 +166,16 @@ class DirAddCoverArtLastFm:
                 continue
             try:
                 metadata = FLAC(fileName)
-            except FLACNoHeaderError as (strerror):
+            except FLACNoHeaderError as strerror:
                 self.log.info("strerror=%s" % ( strerror))
                 continue
-            except error  as (flacErorr):
+            except error  as flacErorr:
                 self.log.error("flacErorr=%s" % ( flacErorr))
                 continue
             if pict_test(metadata):
                 self.log.info("Already has cover for:%s" % (fileName))
                 continue
             #print metadata
-
 
 
             self.filepaths.append(fileName)
@@ -372,7 +369,7 @@ class DirAddCoverArtLastFm:
 
         else:
             # We know this is not one Album
-            print "We know this is not one Album so ignoring"
+            print("We know this is not one Album so ignoring")
             return
         #print ArtistList
         #print self.AritistsUnion,self.AritistsIntersection
@@ -385,7 +382,7 @@ class DirAddCoverArtLastFm:
         MadeUrl = []
         last_request = LastFM()
         LocalQueriedImages = {}
-        plannedQueriesKeys = plannedQueries.keys()
+        plannedQueriesKeys = list(plannedQueries.keys())
         plannedQueriesKeys.sort()
         for filePath in plannedQueriesKeys:
             QueriesforFile = plannedQueries[filePath]
@@ -415,9 +412,6 @@ class DirAddCoverArtLastFm:
                             self.log.warning("No valid url found for:%s:%s" % (filePath,Querie))
                             imageUrl =None
 
-
-
-
                     #print "imageUrl=%s" % imageUrl
                     MadeQueries.append(Querie)
                     MadeUrl.append(imageUrl)
@@ -429,7 +423,7 @@ class DirAddCoverArtLastFm:
                     break
             if index == -1:
                 # we had no queires for this file.
-                print "we had no queires for this file."
+                print("we had no queires for this file.")
                 continue
             if MadeUrl[index] == None:
                 # Our last Query Was unsuccessfull
@@ -452,11 +446,12 @@ class DirAddCoverArtLastFm:
     def DisplayUrls(self):
         for flacPath in self.QueriedImages.keys():
             shortname = os.path.basename(flacPath)
-            print "%s - %s" % (shortname , self.QueriedImages[flacPath])
+            print("%s - %s" % (shortname , self.QueriedImages[flacPath]))
+
     def AddImages(self):
         MadeUrls = []
         MadeUrlsResults = []
-        QueriedImagesKeys = self.QueriedImages.keys()
+        QueriedImagesKeys = list(self.QueriedImages.keys())
         QueriedImagesKeys.sort()
         for flacPath in QueriedImagesKeys:
             index = -1
@@ -468,10 +463,9 @@ class DirAddCoverArtLastFm:
                     #print MadeUrls
                     try:
                         #print "Query=%s,%s" % (Query,type(Query))
-
-                        data = urllib2.urlopen(Query  )
-                    except urllib2.URLError:
-                        print "Could not open URL: %s for file : %s" % (Query,flacPath)
+                        data = urllib.request.urlopen(Query  )
+                    except urllib.error.URLError:
+                        print("Could not open URL: %s for file : %s" % (Query,flacPath))
                         continue
                     MadeUrls.append(Query)
                     MadeUrlsResults.append(data.read())
@@ -485,12 +479,14 @@ class DirAddCoverArtLastFm:
             #print ' have %s for %s' % (Query,flacPath)
             try:
                 metadata = FLAC(flacPath)
-            except FLACNoHeaderError as (strerror):
-                print strerror
+            except FLACNoHeaderError as strerror:
+                print(strerror)
                 continue
+
             if pict_test(metadata):
-                print "Already has cover are:%s" % (flacPath)
+                print("Already has cover are:%s" % (flacPath))
                 continue
+
             image = Picture()
             image.type = 3
             image.desc = 'front cover'
@@ -500,14 +496,17 @@ class DirAddCoverArtLastFm:
                 mime = 'image/jpeg'
             image.data = MadeUrlsResults[index]
             metadata.add_picture(image)
-            metadata.save()
+            try:
+                metadata.save()
+            except exceptions.IOError as e:
+                print("exception=%s" % (e))
+                continue
+
 
 def AddCoverArt2(path,AddCoverArtMetadata):
     last_request = LastFM()
-
     for (path, dirs, files) in os.walk(path):
         #print path
-
         obj = DirAddCoverArtLastFm(path)
         if "clear" in AddCoverArtMetadata:
             obj.clearCoverArt()
@@ -518,10 +517,8 @@ def AddCoverArt2(path,AddCoverArtMetadata):
         if "album" in AddCoverArtMetadata:
             obj.DefaultAlbumList = AddCoverArtMetadata["album"]
 
-
             #print obj.DefaultArtistList
         if "url" in AddCoverArtMetadata:
-
             obj.SetUrl(AddCoverArtMetadata["url"])
         else:
             obj.QueryLastFm()
@@ -531,7 +528,6 @@ def AddCoverArt2(path,AddCoverArtMetadata):
         obj.DisplayUrls()
         if "apply" in AddCoverArtMetadata:
             obj.AddImages()
-
 
 
 
