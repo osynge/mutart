@@ -53,7 +53,7 @@ class LastFM:
             "api_key":	self.API_KEY,
             "limit":	3,
             "format":	"json",
-            "autocorrect" : 1
+            "autocorrect": 1
         })
         try:
             # Create an API Request
@@ -305,7 +305,7 @@ class DirAddCoverArtLastFm:
 
                     for b in AlbumList:
                         for a in ArtistList:
-                            plannedQueries[filePath].append({'album': b, 'artist' : a})
+                            plannedQueries[filePath].append({'album': b, 'artist': a})
 
             else:
                 # We know we have one Album but dirfferent tracks:
@@ -337,7 +337,7 @@ class DirAddCoverArtLastFm:
                         pass
                     for a in ArtistList:
                         for b in AlbumList:
-                            plannedQueries[filePath].append({'album': b, 'artist' : a})
+                            plannedQueries[filePath].append({'album': b, 'artist': a})
         else:
             # We know this is not one Album
             print("We know this is not one Album so ignoring")
@@ -398,7 +398,7 @@ class DirAddCoverArtLastFm:
     def DisplayUrls(self):
         for flacPath in self.QueriedImages.keys():
             shortname = os.path.basename(flacPath)
-            print("%s - %s" % (shortname , self.QueriedImages[flacPath]))
+            print("%s - %s" % (shortname, self.QueriedImages[flacPath]))
 
     def AddImages(self):
         MadeUrls = []
