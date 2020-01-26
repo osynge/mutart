@@ -153,7 +153,7 @@ class DirAddCoverArtLastFm:
             except FLACNoHeaderError as strerror:
                 self.log.info("strerror=%s" % (strerror))
                 continue
-            except error  as flacErorr:
+            except error as flacErorr:
                 self.log.error("flacErorr=%s" % (flacErorr))
                 continue
             if pict_test(metadata):
@@ -390,7 +390,7 @@ class DirAddCoverArtLastFm:
             if LocalQueriedImages[key] is not None:
                 self.QueriedImages[key] = LocalQueriedImages[key]
 
-    def  SetUrl(self, url):
+    def SetUrl(self, url):
         self.QueriedImages = {}
         for filePath in self.filepaths:
             self.QueriedImages[filePath] = [url]
