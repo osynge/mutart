@@ -190,7 +190,7 @@ class DirAddCoverArtLastFm:
             else:
                 try:
                     for artist in self.MutagenStructs[fileName]['artist']:
-                        if not artist in self.AritistsList:
+                        if artist not in self.AritistsList:
                             self.AritistsList.append(artist)
                 except KeyError:
                     pass
@@ -224,7 +224,7 @@ class DirAddCoverArtLastFm:
             else:
                 try:
                     for artist in self.MutagenStructs[fileName]['artist']:
-                        if not artist in self.PerformerList:
+                        if artist not in self.PerformerList:
                             self.PerformerList.append(artist)
                 except KeyError:
                     pass
@@ -258,7 +258,7 @@ class DirAddCoverArtLastFm:
             else:
                 try:
                     for performer in self.MutagenStructs[fileName]['album']:
-                        if not performer in self.AlbumList:
+                        if performer not in self.AlbumList:
                             self.AlbumList.append(performer)
                 except KeyError:
                     pass
@@ -306,20 +306,20 @@ class DirAddCoverArtLastFm:
                     AlbumList = list(self.DefaultAlbumList)
                     try:
                         for artist in self.MutagenStructs[filePath]["artist"]:
-                            if not artist in ArtistList:
+                            if artist not in ArtistList:
                                 ArtistList.append(artist)
                     except KeyError:
                         pass
                     try:
                         for artist in self.MutagenStructs[filePath]["performer"]:
-                            if not artist in ArtistList:
+                            if artist not in ArtistList:
                                 ArtistList.append(artist)
                     except KeyError:
                         pass
                     #print self.MutagenStructs[filePath]
                     try:
                         for album in self.MutagenStructs[filePath]["album"]:
-                            if not album in AlbumList:
+                            if album not in AlbumList:
                                 AlbumList.append(album)
                     except KeyError:
                         pass
@@ -336,27 +336,27 @@ class DirAddCoverArtLastFm:
                     ArtistList = list(self.DefaultArtistList)
                     AlbumList = list(self.DefaultAlbumList)
                     for artist in ['Various Artists', 'Various']:
-                        if not artist in ArtistList:
+                        if artist not in ArtistList:
                                 ArtistList.append(artist)
                     #print AlbumList
                     #print ArtistList
                     plannedQueries[filePath] = []
                     try:
                         for artist in self.MutagenStructs[filePath]["artist"]:
-                            if not artist in ArtistList:
+                            if artist not in ArtistList:
                                 ArtistList.append(artist)
                     except KeyError:
                         pass
                     try:
                         for artist in self.MutagenStructs[filePath]["performer"]:
-                            if not artist in ArtistList:
+                            if artist not in ArtistList:
                                 ArtistList.append(artist)
                     except KeyError:
                         pass
 
                     try:
                         for album in self.MutagenStructs[filePath]["album"]:
-                            if not album in AlbumList:
+                            if album not in AlbumList:
                                 AlbumList.append(album)
                     except KeyError:
                         pass
