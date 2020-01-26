@@ -77,23 +77,6 @@ class LastFM:
             self.log.error("Network error: %s" % e.reason.args[1])
 
 
-def add_flac_cover(filename, albumart):
-    audio = File(filename)
-
-    image = Picture()
-    image.type = 3
-    if albumart.endswith('png'):
-        mime = 'image/png'
-    else:
-        mime = 'image/jpeg'
-    image.desc = 'front cover'
-    with open(albumart, 'rb') as f: # better than open(albumart, 'rb').read() ?
-        image.data = f.read()
-
-    audio.add_picture(image)
-    audio.save()
-
-
 def pict_test(audio):
     try:
         x = audio.pictures
