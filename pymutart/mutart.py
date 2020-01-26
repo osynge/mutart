@@ -267,7 +267,6 @@ class DirAddCoverArtLastFm:
                     pass
 
     def QueryLastFm(self):
-        SuccessfullQueires = []
         self.QueriedImages = {}
         if len(self.filepaths) == 0:
             return
@@ -344,7 +343,6 @@ class DirAddCoverArtLastFm:
             return
 
         MadeQueries = []
-        MadeQueriesResults = []
         MadeUrl = []
         last_request = LastFM()
         LocalQueriedImages = {}
@@ -439,9 +437,9 @@ class DirAddCoverArtLastFm:
             image.type = 3
             image.desc = 'front cover'
             if Query.endswith('png'):
-                mime = 'image/png'
+                image.mime = 'image/png'
             if Query.endswith('jpg'):
-                mime = 'image/jpeg'
+                image.mime = 'image/jpeg'
             image.data = MadeUrlsResults[index]
             metadata.add_picture(image)
             try:
@@ -452,7 +450,6 @@ class DirAddCoverArtLastFm:
 
 
 def AddCoverArt2(path, AddCoverArtMetadata):
-    last_request = LastFM()
     for (path, dirs, files) in os.walk(path):
         obj = DirAddCoverArtLastFm(path)
         if "clear" in AddCoverArtMetadata:
