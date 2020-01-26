@@ -21,6 +21,7 @@ class LastFM:
         self.log = logging.getLogger("LastFM")
         self.API_URL = "http://ws.audioscrobbler.com/2.0/"
         self.API_KEY = "c6e9c72bbec0497a87391feda206de05"
+
     def get_genre(self, genre, **kwargs):
         kwargs.update({
             "method":	"tag.gettopartists",
@@ -128,6 +129,7 @@ class DirAddCoverArtLastFm:
         self.filepaths = []
         self.DefaultArtistList = []
         self.DefaultAlbumList = []
+
     def clearCoverArt(self):
         for fileShortName in os.listdir(self.path):
             fileName = os.path.join(self.path, fileShortName)
@@ -437,6 +439,7 @@ class DirAddCoverArtLastFm:
             if LocalQueriedImages[key] != None:
                 self.QueriedImages[key] = LocalQueriedImages[key]
         #print self.QueriedImages
+
     def  SetUrl(self, url):
         #print "called SetUrl"
         self.QueriedImages = {}
