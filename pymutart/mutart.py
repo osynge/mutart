@@ -3,7 +3,7 @@ from mutagen.flac import FLAC, Picture, FLACNoHeaderError, error
 
 import os
 from six.moves import urllib
-#import urllib, urllib2
+# import urllib, urllib2
 import logging
 import optparse
 import sys
@@ -11,7 +11,7 @@ try:
     import json
 except ImportError:
     import simplejson as json
-#import httplib
+# import httplib
 
 version = "0.0.1"
 
@@ -31,14 +31,14 @@ class LastFM:
             "format":	"json"
         })
         try:
-            #Create an API Request
+            # Create an API Request
             url = self.API_URL + "?" + urllib.urlencode(kwargs)
-            #Send Request and Collect it
+            # Send Request and Collect it
             data = urllib.request.urlopen( url )
-            #Print it
+            # Print it
             response_data = json.load( data )
             print(response_data['topartists']['artist'][0]['name'])
-            #Close connection
+            # Close connection
             data.close()
         except urllib.error.HTTPError as e:
             print("HTTP error: %d" % e.code)
@@ -56,16 +56,16 @@ class LastFM:
             "autocorrect" : 1
         })
         try:
-            #Create an API Request
+            # Create an API Request
             try:
                 url = self.API_URL + "?" + urllib.parse.urlencode(kwargs)
             except UnicodeEncodeError as one:
                 print("encoding error:%s" % (one))
                 return None
-            #Send Request and Collect it
+            # Send Request and Collect it
             data = urllib.request.urlopen( url )
             response_data = json.load( data )
-            #Close connection
+            # Close connection
             data.close()
 
             if 'album' in response_data:
@@ -94,7 +94,7 @@ def findRightImageFromLastFm(images):
     preferance.reverse()
     bestUrl = None
     bestPreferanceIndex = -1
-    #print "images=%s" % images
+    # print "images=%s" % images
     for image in images:
         try:
             thisPreferanceIndex = preferance.index(image["size"])
@@ -133,7 +133,6 @@ class DirAddCoverArtLastFm:
             del(metadata)
 
     def readfiles(self):
-        #print "sdhjkhsdkjlhsd"
         self.MutagenStructs = {}
         self.AritistsUnion = None
         self.AritistsIntersection = None
@@ -160,7 +159,6 @@ class DirAddCoverArtLastFm:
             if pict_test(metadata):
                 self.log.info("Already has cover for:%s" % (fileName))
                 continue
-            #print metadata
 
             self.filepaths.append(fileName)
             self.MutagenStructs[fileName] = metadata
@@ -269,7 +267,6 @@ class DirAddCoverArtLastFm:
                     pass
 
     def QueryLastFm(self):
-        #print 'sdssddssd'
         SuccessfullQueires = []
         self.QueriedImages = {}
         if len(self.filepaths) == 0:
@@ -282,7 +279,6 @@ class DirAddCoverArtLastFm:
         if len(self.AlbumIntersection ) == len(self.AlbumUnion):
             # we know that we have one album.
             if len(self.AritistsIntersection ) == len(self.AritistsUnion):
-                #print 'ddd'
                 # We know ArtistList and Album is conistent across Album
                 for filePath in self.filepaths:
                     ArtistList = list(self.DefaultArtistList)
@@ -299,7 +295,6 @@ class DirAddCoverArtLastFm:
                                 ArtistList.append(artist)
                     except KeyError:
                         pass
-                    #print self.MutagenStructs[filePath]
                     try:
                         for album in self.MutagenStructs[filePath]["album"]:
                             if album not in AlbumList:
@@ -314,15 +309,12 @@ class DirAddCoverArtLastFm:
 
             else:
                 # We know we have one Album but dirfferent tracks:
-                #print 'dddddddddd'
                 for filePath in self.filepaths:
                     ArtistList = list(self.DefaultArtistList)
                     AlbumList = list(self.DefaultAlbumList)
                     for artist in ['Various Artists', 'Various']:
                         if artist not in ArtistList:
                                 ArtistList.append(artist)
-                    #print AlbumList
-                    #print ArtistList
                     plannedQueries[filePath] = []
                     try:
                         for artist in self.MutagenStructs[filePath]["artist"]:
@@ -343,24 +335,14 @@ class DirAddCoverArtLastFm:
                                 AlbumList.append(album)
                     except KeyError:
                         pass
-                    #print "ArtistList=%s" % ArtistList
                     for a in ArtistList:
                         for b in AlbumList:
                             plannedQueries[filePath].append({'album': b, 'artist' : a})
-                    #print "plannedQueries[filePath]=%s"  % plannedQueries[filePath]
-                    #print "ArtistList=%s"  % ArtistList
-                    #print "AlbumList=%s"  % AlbumList
-
         else:
             # We know this is not one Album
             print("We know this is not one Album so ignoring")
             return
-        #print ArtistList
-        #print self.AritistsUnion,self.AritistsIntersection
-        #print self.AlbumUnion,self.AlbumIntersection
-        #print "self.AritistsList=%s" % self.AritistsList
-        #print self.AlbumList
-        #print "plannedQueries=%s" %plannedQueries
+
         MadeQueries = []
         MadeQueriesResults = []
         MadeUrl = []
@@ -371,22 +353,17 @@ class DirAddCoverArtLastFm:
         for filePath in plannedQueriesKeys:
             QueriesforFile = plannedQueries[filePath]
             index = -1
-            #print QueriesforFile
             for Querie in QueriesforFile:
                 try:
                     index = MadeQueries.index(Querie)
                 except ValueError:
-                    #print ' filling cache %s ----- %s' % (Querie,filePath)
-                    #print type (Querie)
                     lastmetadata = last_request.album_getInfo(Querie)
-                    #print "lastmetadata=%s" % lastmetadata
                     imageUrl =None
                     if lastmetadata is None:
                         self.log.warning("No url found for: %s" % (Querie))
                         imageUrl =None
                     else:
                         listOfLastFmImageUrls = findRightImageFromLastFm(lastmetadata['album']["image"])
-                        #print "listOfLastFmImageUrls=%s" % (listOfLastFmImageUrls)
                         imageUrl = []
                         for Aurl in listOfLastFmImageUrls:
                             if len(Aurl) != 0:
@@ -395,14 +372,10 @@ class DirAddCoverArtLastFm:
                         if len(imageUrl) == 0:
                             self.log.warning("No valid url found for:%s:%s" % (filePath, Querie))
                             imageUrl =None
-
-                    #print "imageUrl=%s" % imageUrl
                     MadeQueries.append(Querie)
                     MadeUrl.append(imageUrl)
                     index = MadeQueries.index(Querie)
                 if MadeUrl[index] is not None:
-                    #print "ddddddddddddddddddddddddddddddddddddddddddd"
-                    #print "MadeUrl[index]=%s" % MadeUrl[index]
                     self.QueriedImages[filePath] = MadeUrl[index]
                     break
             if index == -1:
@@ -411,19 +384,13 @@ class DirAddCoverArtLastFm:
                 continue
             if MadeUrl[index] is None:
                 # Our last Query Was unsuccessfull
-
                 continue
-            #print "MadeUrl[index]=%s" % (MadeUrl[index])
             LocalQueriedImages[filePath] = MadeUrl[index]
-
-        #print "self.QueriedImages=%s" % (self.QueriedImages)
         for key in LocalQueriedImages.keys():
             if LocalQueriedImages[key] is not None:
                 self.QueriedImages[key] = LocalQueriedImages[key]
-        #print self.QueriedImages
 
     def  SetUrl(self, url):
-        #print "called SetUrl"
         self.QueriedImages = {}
         for filePath in self.filepaths:
             self.QueriedImages[filePath] = [url]
@@ -444,10 +411,7 @@ class DirAddCoverArtLastFm:
                 try:
                     index = MadeUrls.index(Query)
                 except ValueError:
-                    #print ' filling --- cache %s:%s' % (Query,flacPath)
-                    #print MadeUrls
                     try:
-                        #print "Query=%s,%s" % (Query,type(Query))
                         data = urllib.request.urlopen(Query  )
                     except urllib.error.URLError:
                         print("Could not open URL: %s for file : %s" % (Query, flacPath))
@@ -461,7 +425,6 @@ class DirAddCoverArtLastFm:
             if len(MadeUrlsResults[index]) == 0:
                 # we had no data
                 continue
-            #print ' have %s for %s' % (Query,flacPath)
             try:
                 metadata = FLAC(flacPath)
             except FLACNoHeaderError as strerror:
@@ -491,7 +454,6 @@ class DirAddCoverArtLastFm:
 def AddCoverArt2(path, AddCoverArtMetadata):
     last_request = LastFM()
     for (path, dirs, files) in os.walk(path):
-        #print path
         obj = DirAddCoverArtLastFm(path)
         if "clear" in AddCoverArtMetadata:
             obj.clearCoverArt()
@@ -502,14 +464,11 @@ def AddCoverArt2(path, AddCoverArtMetadata):
         if "album" in AddCoverArtMetadata:
             obj.DefaultAlbumList = AddCoverArtMetadata["album"]
 
-            #print obj.DefaultArtistList
         if "url" in AddCoverArtMetadata:
             obj.SetUrl(AddCoverArtMetadata["url"])
         else:
             obj.QueryLastFm()
 
-        #print obj.QueriedImages
-        #obj.AddImages()
         obj.DisplayUrls()
         if "apply" in AddCoverArtMetadata:
             obj.AddImages()
@@ -583,7 +542,6 @@ def main():
     if options.album:
         if len(options.album) > 0:
             metadata['album'] = options.album
-            #print type(metadata['album']), metadata['album']
     if options.apply:
         metadata['apply'] = True
     if options.clear:
