@@ -106,7 +106,7 @@ def pict_test(audio):
 
 
 def findRightImageFromLastFm(images):
-    preferance = ['large','extralarge','mega','medium','small']
+    preferance = ['large', 'extralarge', 'mega', 'medium', 'small']
     preferance.reverse()
     bestUrl = None
     bestPreferanceIndex = -1
@@ -130,7 +130,7 @@ class DirAddCoverArtLastFm:
         self.DefaultAlbumList = []
     def clearCoverArt(self):
         for fileShortName in os.listdir(self.path):
-            fileName = os.path.join(self.path,fileShortName)
+            fileName = os.path.join(self.path, fileShortName)
 
             if os.path.isdir(fileName):
                 continue
@@ -161,7 +161,7 @@ class DirAddCoverArtLastFm:
         self.PerformerList = None
         self.filepaths = []
         for fileShortName in os.listdir(self.path):
-            fileName = os.path.join(self.path,fileShortName)
+            fileName = os.path.join(self.path, fileShortName)
             if os.path.isdir(fileName):
                 continue
             try:
@@ -326,7 +326,7 @@ class DirAddCoverArtLastFm:
 
                     for b in AlbumList:
                         for a in ArtistList:
-                            plannedQueries[filePath].append({'album': b,'artist' : a})
+                            plannedQueries[filePath].append({'album': b, 'artist' : a})
 
             else:
                 # We know we have one Album but dirfferent tracks:
@@ -334,7 +334,7 @@ class DirAddCoverArtLastFm:
                 for filePath in self.filepaths:
                     ArtistList = list(self.DefaultArtistList)
                     AlbumList = list(self.DefaultAlbumList)
-                    for artist in ['Various Artists','Various']:
+                    for artist in ['Various Artists', 'Various']:
                         if not artist in ArtistList:
                                 ArtistList.append(artist)
                     #print AlbumList
@@ -362,7 +362,7 @@ class DirAddCoverArtLastFm:
                     #print "ArtistList=%s" % ArtistList
                     for a in ArtistList:
                         for b in AlbumList:
-                            plannedQueries[filePath].append({'album': b,'artist' : a})
+                            plannedQueries[filePath].append({'album': b, 'artist' : a})
                     #print "plannedQueries[filePath]=%s"  % plannedQueries[filePath]
                     #print "ArtistList=%s"  % ArtistList
                     #print "AlbumList=%s"  % AlbumList
@@ -409,7 +409,7 @@ class DirAddCoverArtLastFm:
                                 if Aurl not in imageUrl:
                                     imageUrl.append(Aurl)
                         if len(imageUrl) == 0:
-                            self.log.warning("No valid url found for:%s:%s" % (filePath,Querie))
+                            self.log.warning("No valid url found for:%s:%s" % (filePath, Querie))
                             imageUrl =None
 
                     #print "imageUrl=%s" % imageUrl
@@ -437,7 +437,7 @@ class DirAddCoverArtLastFm:
             if LocalQueriedImages[key] != None:
                 self.QueriedImages[key] = LocalQueriedImages[key]
         #print self.QueriedImages
-    def  SetUrl(self,url):
+    def  SetUrl(self, url):
         #print "called SetUrl"
         self.QueriedImages = {}
         for filePath in self.filepaths:
@@ -465,7 +465,7 @@ class DirAddCoverArtLastFm:
                         #print "Query=%s,%s" % (Query,type(Query))
                         data = urllib.request.urlopen(Query  )
                     except urllib.error.URLError:
-                        print("Could not open URL: %s for file : %s" % (Query,flacPath))
+                        print("Could not open URL: %s for file : %s" % (Query, flacPath))
                         continue
                     MadeUrls.append(Query)
                     MadeUrlsResults.append(data.read())
@@ -503,7 +503,7 @@ class DirAddCoverArtLastFm:
                 continue
 
 
-def AddCoverArt2(path,AddCoverArtMetadata):
+def AddCoverArt2(path, AddCoverArtMetadata):
     last_request = LastFM()
     for (path, dirs, files) in os.walk(path):
         #print path
@@ -532,24 +532,24 @@ def AddCoverArt2(path,AddCoverArtMetadata):
 
 
 
-def AddCoverArt(pathList,AddCoverArtMetadata):
+def AddCoverArt(pathList, AddCoverArtMetadata):
     for path in pathList:
-        AddCoverArt2(path,AddCoverArtMetadata)
+        AddCoverArt2(path, AddCoverArtMetadata)
 
 
 def main():
     log = logging.getLogger("main")
     """Runs program and handles command line options"""
     parser = optparse.OptionParser(version = "%prog " + version)
-    parser.add_option('--path', action ='append',help='Music file path')
-    parser.add_option('--artist',action='append',help='Artist Name')
-    parser.add_option('--album',action='append',help='Artist Name')
-    parser.add_option('--url',action='store',help='Artist Name')
-    parser.add_option('--apply',action='store_true',help='Artist Name')
-    parser.add_option('--clear',action='store_true',help='Artist Name')
-    parser.add_option('-L', '--logcfg', action ='store',help='Logfile configuration file.', metavar='CFG_LOGFILE')
-    parser.add_option('--verbose', action ='count',help='Change global log level, increasing log output.', metavar='LOGFILE')
-    parser.add_option('--quiet', action ='count',help='Change global log level, decreasing log output.', metavar='LOGFILE')
+    parser.add_option('--path', action ='append', help='Music file path')
+    parser.add_option('--artist', action='append', help='Artist Name')
+    parser.add_option('--album', action='append', help='Artist Name')
+    parser.add_option('--url', action='store', help='Artist Name')
+    parser.add_option('--apply', action='store_true', help='Artist Name')
+    parser.add_option('--clear', action='store_true', help='Artist Name')
+    parser.add_option('-L', '--logcfg', action ='store', help='Logfile configuration file.', metavar='CFG_LOGFILE')
+    parser.add_option('--verbose', action ='count', help='Change global log level, increasing log output.', metavar='LOGFILE')
+    parser.add_option('--quiet', action ='count', help='Change global log level, decreasing log output.', metavar='LOGFILE')
     options, arguments = parser.parse_args()
     # Set up basic variables
     logFile = None
@@ -612,7 +612,7 @@ def main():
             metadata['url'] = options.url
 
     if options.path:
-        AddCoverArt(options.path,metadata)
+        AddCoverArt(options.path, metadata)
 
 if __name__ == "__main__":
     main()
