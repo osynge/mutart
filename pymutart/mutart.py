@@ -60,7 +60,7 @@ class LastFM:
             try:
                 url = self.API_URL + "?" + urllib.parse.urlencode(kwargs)
             except UnicodeEncodeError as one:
-                #print "encoding error"
+                print("encoding error:%s" % (one))
                 return None
             #Send Request and Collect it
             data = urllib.request.urlopen( url )
