@@ -76,6 +76,7 @@ class LastFM:
         except urllib.error.URLError as e:
             self.log.error("Network error: %s" % e.reason.args[1])
 
+
 def add_flac_cover(filename, albumart):
     audio = File(filename)
 
@@ -91,6 +92,7 @@ def add_flac_cover(filename, albumart):
 
     audio.add_picture(image)
     audio.save()
+
 
 def pict_test(audio):
     try:
@@ -119,6 +121,7 @@ def findRightImageFromLastFm(images):
             bestPreferanceIndex = thisPreferanceIndex
             bestUrl = image["#text"]
     return [bestUrl]
+
 
 class DirAddCoverArtLastFm:
     def __init__(self, path):
@@ -528,6 +531,7 @@ def AddCoverArt2(path, AddCoverArtMetadata):
         if "apply" in AddCoverArtMetadata:
             obj.AddImages()
 
+
 def AddCoverArt(pathList, AddCoverArtMetadata):
     for path in pathList:
         AddCoverArt2(path, AddCoverArtMetadata)
@@ -607,6 +611,7 @@ def main():
 
     if options.path:
         AddCoverArt(options.path, metadata)
+
 
 if __name__ == "__main__":
     main()
