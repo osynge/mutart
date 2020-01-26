@@ -40,9 +40,9 @@ class LastFM:
             print(response_data['topartists']['artist'][0]['name'])
             #Close connection
             data.close()
-        except urllib2.HTTPError as e:
+        except urllib.error.HTTPError as e:
             print("HTTP error: %d" % e.code)
-        except urllib2.URLError as e:
+        except urllib.error.URLError as e:
             print("Network error: %s" % e.reason.args[1])
 
     def album_getInfo(self, info, **kwargs):
