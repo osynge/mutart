@@ -17,7 +17,7 @@ version = "0.0.1"
 
 
 class LastFM:
-    def __init__(self ):
+    def __init__(self):
         self.log = logging.getLogger("LastFM")
         self.API_URL = "http://ws.audioscrobbler.com/2.0/"
         self.API_KEY = "c6e9c72bbec0497a87391feda206de05"
@@ -34,9 +34,9 @@ class LastFM:
             # Create an API Request
             url = self.API_URL + "?" + urllib.urlencode(kwargs)
             # Send Request and Collect it
-            data = urllib.request.urlopen( url )
+            data = urllib.request.urlopen(url)
             # Print it
-            response_data = json.load( data )
+            response_data = json.load(data)
             print(response_data['topartists']['artist'][0]['name'])
             # Close connection
             data.close()
@@ -63,8 +63,8 @@ class LastFM:
                 print("encoding error:%s" % (one))
                 return None
             # Send Request and Collect it
-            data = urllib.request.urlopen( url )
-            response_data = json.load( data )
+            data = urllib.request.urlopen(url)
+            response_data = json.load(data)
             # Close connection
             data.close()
 
@@ -123,10 +123,10 @@ class DirAddCoverArtLastFm:
             try:
                 metadata = FLAC(fileName)
             except FLACNoHeaderError as strerror:
-                self.log.info("strerror=%s" % ( strerror))
+                self.log.info("strerror=%s" % (strerror))
                 continue
             except error as E:
-                self.log.info("strerror=%s" % ( E))
+                self.log.info("strerror=%s" % (E))
                 continue
             metadata.clear_pictures()
             metadata.save()
@@ -151,10 +151,10 @@ class DirAddCoverArtLastFm:
             try:
                 metadata = FLAC(fileName)
             except FLACNoHeaderError as strerror:
-                self.log.info("strerror=%s" % ( strerror))
+                self.log.info("strerror=%s" % (strerror))
                 continue
             except error  as flacErorr:
-                self.log.error("flacErorr=%s" % ( flacErorr))
+                self.log.error("flacErorr=%s" % (flacErorr))
                 continue
             if pict_test(metadata):
                 self.log.info("Already has cover for:%s" % (fileName))
@@ -276,9 +276,9 @@ class DirAddCoverArtLastFm:
             return
         if self.AlbumUnion is None:
             return
-        if len(self.AlbumIntersection ) == len(self.AlbumUnion):
+        if len(self.AlbumIntersection) == len(self.AlbumUnion):
             # we know that we have one album.
-            if len(self.AritistsIntersection ) == len(self.AritistsUnion):
+            if len(self.AritistsIntersection) == len(self.AritistsUnion):
                 # We know ArtistList and Album is conistent across Album
                 for filePath in self.filepaths:
                     ArtistList = list(self.DefaultArtistList)
@@ -412,7 +412,7 @@ class DirAddCoverArtLastFm:
                     index = MadeUrls.index(Query)
                 except ValueError:
                     try:
-                        data = urllib.request.urlopen(Query  )
+                        data = urllib.request.urlopen(Query)
                     except urllib.error.URLError:
                         print("Could not open URL: %s for file : %s" % (Query, flacPath))
                         continue
