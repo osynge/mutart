@@ -358,10 +358,10 @@ class DirAddCoverArtLastFm:
                     index = MadeQueries.index(Querie)
                 except ValueError:
                     lastmetadata = last_request.album_getInfo(Querie)
-                    imageUrl =None
+                    imageUrl = None
                     if lastmetadata is None:
                         self.log.warning("No url found for: %s" % (Querie))
-                        imageUrl =None
+                        imageUrl = None
                     else:
                         listOfLastFmImageUrls = findRightImageFromLastFm(lastmetadata['album']["image"])
                         imageUrl = []
@@ -371,7 +371,7 @@ class DirAddCoverArtLastFm:
                                     imageUrl.append(Aurl)
                         if len(imageUrl) == 0:
                             self.log.warning("No valid url found for:%s:%s" % (filePath, Querie))
-                            imageUrl =None
+                            imageUrl = None
                     MadeQueries.append(Querie)
                     MadeUrl.append(imageUrl)
                     index = MadeQueries.index(Querie)
