@@ -482,16 +482,16 @@ def AddCoverArt(pathList, AddCoverArtMetadata):
 def main():
     log = logging.getLogger("main")
     """Runs program and handles command line options"""
-    parser = optparse.OptionParser(version = "%prog " + version)
-    parser.add_option('--path', action ='append', help='Music file path')
+    parser = optparse.OptionParser(version="%prog " + version)
+    parser.add_option('--path', action='append', help='Music file path')
     parser.add_option('--artist', action='append', help='Artist Name')
     parser.add_option('--album', action='append', help='Artist Name')
     parser.add_option('--url', action='store', help='Artist Name')
     parser.add_option('--apply', action='store_true', help='Artist Name')
     parser.add_option('--clear', action='store_true', help='Artist Name')
-    parser.add_option('-L', '--logcfg', action ='store', help='Logfile configuration file.', metavar='CFG_LOGFILE')
-    parser.add_option('--verbose', action ='count', help='Change global log level, increasing log output.', metavar='LOGFILE')
-    parser.add_option('--quiet', action ='count', help='Change global log level, decreasing log output.', metavar='LOGFILE')
+    parser.add_option('-L', '--logcfg', action='store', help='Logfile configuration file.', metavar='CFG_LOGFILE')
+    parser.add_option('--verbose', action='count', help='Change global log level, increasing log output.', metavar='LOGFILE')
+    parser.add_option('--quiet', action='count', help='Change global log level, decreasing log output.', metavar='LOGFILE')
     options, arguments = parser.parse_args()
     # Set up basic variables
     logFile = None
