@@ -446,7 +446,7 @@ class DirAddCoverArtLastFm:
             metadata.add_picture(image)
             try:
                 metadata.save()
-            except exceptions.IOError as e:
+            except IOError as e:
                 print("exception=%s" % (e))
                 continue
 
