@@ -182,7 +182,7 @@ class DirAddCoverArtLastFm:
             self.filepaths.append(fileName)
             self.MutagenStructs[fileName] = metadata
 
-            if self.AritistsList == None:
+            if self.AritistsList is None:
                 try:
                     self.AritistsList = self.MutagenStructs[fileName]['artist']
                 except KeyError:
@@ -195,7 +195,7 @@ class DirAddCoverArtLastFm:
                 except KeyError:
                     pass
             ####
-            if self.AritistsUnion == None:
+            if self.AritistsUnion is None:
                 try:
                     self.AritistsUnion = set(self.MutagenStructs[fileName]['artist'])
                 except KeyError:
@@ -205,7 +205,7 @@ class DirAddCoverArtLastFm:
                     self.AritistsUnion = self.AritistsUnion.union(self.MutagenStructs[fileName]['artist'])
                 except KeyError:
                     pass
-            if self.AritistsIntersection == None:
+            if self.AritistsIntersection is None:
                 try:
                     self.AritistsIntersection = set(self.MutagenStructs[fileName]['artist'])
                 except KeyError:
@@ -216,7 +216,7 @@ class DirAddCoverArtLastFm:
                 except KeyError:
                     pass
             ########
-            if self.PerformerList == None:
+            if self.PerformerList is None:
                 try:
                     self.PerformerList = self.MutagenStructs[fileName]['artist']
                 except KeyError:
@@ -229,7 +229,7 @@ class DirAddCoverArtLastFm:
                 except KeyError:
                     pass
             ####
-            if self.PerformerUnion == None:
+            if self.PerformerUnion is None:
                 try:
                     self.PerformerUnion = set(self.MutagenStructs[fileName]['performer'])
                 except KeyError:
@@ -239,7 +239,7 @@ class DirAddCoverArtLastFm:
                     self.PerformerUnion = self.PerformerUnion.union(self.MutagenStructs[fileName]['performer'])
                 except KeyError:
                     pass
-            if self.PerformerIntersection == None:
+            if self.PerformerIntersection is None:
                 try:
                     self.PerformerIntersection = set(self.MutagenStructs[fileName]['performer'])
                 except KeyError:
@@ -250,7 +250,7 @@ class DirAddCoverArtLastFm:
                 except KeyError:
                     pass
             #
-            if self.AlbumList == None:
+            if self.AlbumList is None:
                 try:
                     self.AlbumList = self.MutagenStructs[fileName]['album']
                 except KeyError:
@@ -264,7 +264,7 @@ class DirAddCoverArtLastFm:
                     pass
             ####
             #
-            if self.AlbumUnion == None:
+            if self.AlbumUnion is None:
                 try:
                     self.AlbumUnion = set(self.MutagenStructs[fileName]['album'])
                 except KeyError:
@@ -274,7 +274,7 @@ class DirAddCoverArtLastFm:
                     self.AlbumUnion = self.AlbumUnion.union(self.MutagenStructs[fileName]['album'])
                 except KeyError:
                     pass
-            if self.AlbumIntersection == None:
+            if self.AlbumIntersection is None:
                 try:
                     self.AlbumIntersection = set(self.MutagenStructs[fileName]['album'])
                 except KeyError:
@@ -292,9 +292,9 @@ class DirAddCoverArtLastFm:
         if len(self.filepaths) == 0:
             return
         plannedQueries = {}
-        if self.AlbumIntersection == None:
+        if self.AlbumIntersection is None:
             return
-        if self.AlbumUnion == None:
+        if self.AlbumUnion is None:
             return
         if len(self.AlbumIntersection ) == len(self.AlbumUnion):
             # we know that we have one album.
@@ -398,7 +398,7 @@ class DirAddCoverArtLastFm:
                     lastmetadata = last_request.album_getInfo(Querie)
                     #print "lastmetadata=%s" % lastmetadata
                     imageUrl =None
-                    if lastmetadata == None:
+                    if lastmetadata is None:
                         self.log.warning("No url found for: %s" % (Querie))
                         imageUrl =None
                     else:
@@ -417,7 +417,7 @@ class DirAddCoverArtLastFm:
                     MadeQueries.append(Querie)
                     MadeUrl.append(imageUrl)
                     index = MadeQueries.index(Querie)
-                if MadeUrl[index] != None:
+                if MadeUrl[index] is not None:
                     #print "ddddddddddddddddddddddddddddddddddddddddddd"
                     #print "MadeUrl[index]=%s" % MadeUrl[index]
                     self.QueriedImages[filePath] = MadeUrl[index]
@@ -426,7 +426,7 @@ class DirAddCoverArtLastFm:
                 # we had no queires for this file.
                 print("we had no queires for this file.")
                 continue
-            if MadeUrl[index] == None:
+            if MadeUrl[index] is None:
                 # Our last Query Was unsuccessfull
 
                 continue
@@ -435,7 +435,7 @@ class DirAddCoverArtLastFm:
 
         #print "self.QueriedImages=%s" % (self.QueriedImages)
         for key in LocalQueriedImages.keys():
-            if LocalQueriedImages[key] != None:
+            if LocalQueriedImages[key] is not None:
                 self.QueriedImages[key] = LocalQueriedImages[key]
         #print self.QueriedImages
 
@@ -580,7 +580,7 @@ def main():
 
     if options.logcfg:
         logFile = options.logcfg
-    if logFile != None:
+    if logFile is not None:
         if os.path.isfile(str(options.log_config)):
             logging.config.fileConfig(options.log_config)
         else:
