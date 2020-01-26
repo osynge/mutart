@@ -104,8 +104,6 @@ def pict_test(audio):
     return False
 
 
-
-
 def findRightImageFromLastFm(images):
     preferance = ['large', 'extralarge', 'mega', 'medium', 'small']
     preferance.reverse()
@@ -148,7 +146,6 @@ class DirAddCoverArtLastFm:
             metadata.save()
             del(metadata)
 
-
     def readfiles(self):
         #print "sdhjkhsdkjlhsd"
         self.MutagenStructs = {}
@@ -178,7 +175,6 @@ class DirAddCoverArtLastFm:
                 self.log.info("Already has cover for:%s" % (fileName))
                 continue
             #print metadata
-
 
             self.filepaths.append(fileName)
             self.MutagenStructs[fileName] = metadata
@@ -532,9 +528,6 @@ def AddCoverArt2(path, AddCoverArtMetadata):
         if "apply" in AddCoverArtMetadata:
             obj.AddImages()
 
-
-
-
 def AddCoverArt(pathList, AddCoverArtMetadata):
     for path in pathList:
         AddCoverArt2(path, AddCoverArtMetadata)
@@ -595,8 +588,6 @@ def main():
 
         logging.basicConfig(level=LoggingLevel)
     log = logging.getLogger("main")
-
-
 
     metadata = {}
     if options.artist:
